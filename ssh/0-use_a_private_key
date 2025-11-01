@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Connect to the server using ssh with a private key
+# Replace "your.server.com" with the actual server address
+
+ssh -i ~/.ssh/annie-key ubuntu@44.212.2.129
