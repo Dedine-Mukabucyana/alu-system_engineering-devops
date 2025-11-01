@@ -1,0 +1,3 @@
+#!/usr/bin/env/bash
+#connect without authentication required
+ssh -i ~/.ssh/school ubuntu@44.212.2.129
