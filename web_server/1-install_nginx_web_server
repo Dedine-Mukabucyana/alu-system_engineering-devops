@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
-# Installs and configures Nginx to display "Holberton School" on the home page
+# This script installs and configures Nginx to serve "Holberton School" on Ubuntu
 
-# Update package list
-apt-get update -y
+# Update package list and install nginx silently
+apt-get update -y > /dev/null 2>&1
+apt-get install -y nginx > /dev/null 2>&1
 
-# Install Nginx
-apt-get install -y nginx
+# Start or restart Nginx without using systemctl
+service nginx start > /dev/null 2>&1
+service nginx reload > /dev/null 2>&1
 
-# Make sure Nginx is running
-service nginx start
-
-# Create a simple HTML page
+# Overwrite default index.html with the required content
 echo "Holberton School for the win!" > /var/www/html/index.html
 
