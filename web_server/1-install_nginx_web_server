@@ -1,53 +1,36 @@
 cat > 1-install_nginx_web_server << 'EOF'
 #!/usr/bin/env bash
-# Configures a new Ubuntu machine to install nginx web server
+# Install nginx and configure to serve Holberton School page
 
-# Update package list
 apt-get update -y
-
-# Install nginx
 apt-get install nginx -y
 
-# STOP nginx first
+# Stop nginx
 service nginx stop
 
-# COMPLETELY remove the default nginx configuration
-rm -f /etc/nginx/sites-enabled/default
+# Remove ALL nginx site configurations
+rm -rf /etc/nginx/sites-available/*
+rm -rf /etc/nginx/sites-enabled/*
 
-# Create the HTML directory
+# Create content directory and file
 mkdir -p /var/www/html
-
-# Create custom index.html with EXACT required string - NO extra spaces
 echo "Holberton School for the win!" > /var/www/html/index.html
 
-# Create a NEW nginx configuration from scratch
-cat > /etc/nginx/sites-available/holberton << 'NGINX_CONFIG'
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    root /var/www/html;
-    index index.html index.htm;
-
-    server_name _;
-
-    location / {
-        try_files $uri $uri/ =404;
+# Create absolute minimal nginx config
+cat > /etc/nginx/nginx.conf << 'CONF'
+events {}
+http {
+    server {
+        listen 80;
+        root /var/www/html;
+        index index.html;
+        location / {
+            try_files $uri $uri/ =404;
+        }
     }
 }
-NGINX_CONFIG
+CONF
 
-# Remove any existing default site and enable our site
-rm -f /etc/nginx/sites-enabled/default
-ln -s /etc/nginx/sites-available/holberton /etc/nginx/sites-enabled/default
-
-# Test the configuration
-nginx -t
-
-# START nginx
+# Start nginx
 service nginx start
-
-# Verify it's working
-sleep 2
-curl -s http://localhost/
 EOF
