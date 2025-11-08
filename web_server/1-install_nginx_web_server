@@ -1,4 +1,3 @@
-# Replace your current script with this fixed version
 cat > 1-install_nginx_web_server << 'EOF'
 #!/usr/bin/env bash
 # Configures a new Ubuntu machine to install nginx web server
@@ -9,43 +8,39 @@ apt-get update -y
 # Install nginx
 apt-get install nginx -y
 
-# Stop nginx first to make configuration changes
-service nginx stop
-
-# Remove default nginx site
-rm -f /etc/nginx/sites-enabled/default
-
-# Create the HTML directory
+# Create the HTML directory with proper permissions
 mkdir -p /var/www/html
+chown -R www-data:www-data /var/www/html
 
-# Create custom index.html with required string
-cat > /var/www/html/index.html << 'HTML_EOF'
-Holberton School for the win!
-HTML_EOF
+# Create custom index.html with EXACT required string
+echo "Holberton School for the win!" > /var/www/html/index.html
 
-# Create nginx configuration
+# Set proper permissions
+chmod 644 /var/www/html/index.html
+
+# Backup original default config
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
+
+# Create simple nginx configuration
 cat > /etc/nginx/sites-available/default << 'NGINX_EOF'
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    
+
     root /var/www/html;
     index index.html index.htm;
-    
+
     server_name _;
-    
+
     location / {
         try_files \$uri \$uri/ =404;
     }
 }
 NGINX_EOF
 
-# Enable the site
-ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+# Restart nginx (not using systemctl as required)
+service nginx restart
 
-# Test nginx configuration
-nginx -t
-
-# Start nginx
-service nginx start
-EOFt
+# Wait a moment for nginx to fully start
+sleep 3
+EOF
