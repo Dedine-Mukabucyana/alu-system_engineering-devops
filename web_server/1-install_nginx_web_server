@@ -1,63 +1,15 @@
-cat > 1-install_nginx_web_server << 'EOF'
 #!/usr/bin/env bash
-# Force nginx to serve Holberton School content - bulletproof version
+#Installing Nginx on Ubuntu
+#Nginx is listening on port 80
+#The GET request should return a page containing "Holberton School"
 
-# Update and install nginx
-apt-get update -y
-apt-get install nginx -y
+sudo apt-get update && upgrade
+sudo apt-get install nginx -y
 
-# Stop nginx completely
-service nginx stop
-pkill nginx 2>/dev/null || true
-
-# Remove ALL existing configurations
-rm -rf /etc/nginx/sites-available/*
-rm -rf /etc/nginx/sites-enabled/*
-
-# Create content directory
-mkdir -p /var/www/html
-
-# Write the exact content - multiple methods
-echo "Holberton School for the win!" > /var/www/html/index.html
-printf "Holberton School for the win!" > /var/www/html/index.html
-
-# Create minimal nginx config
-cat > /etc/nginx/nginx.conf << 'NGINX_CONF'
-worker_processes auto;
-events {
-    worker_connections 768;
-}
-http {
-    sendfile on;
-    tcp_nopush on;
-    tcp_nodelay on;
-    keepalive_timeout 65;
-    types_hash_max_size 2048;
-    include /etc/nginx/mime.types;
-    default_type application/octet-stream;
-    
-    server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-        root /var/www/html;
-        index index.html;
-        server_name _;
-        location / {
-            try_files $uri $uri/ =404;
-        }
-    }
-}
-NGINX_CONF
-
-# Verify nginx config
-nginx -t
-
-# Start nginx
-service nginx start
-
-# Wait and verify
-sleep 5
-echo "=== Testing nginx ==="
-curl -s http://localhost/
-echo "=== End test ==="
-EOF
+#Create a directory called html inside your nginx server
+sudo mkdir /var/www/html
+#Create a file inside that directory called index.html
+sudo touch /var/www/html/index.html
+#Display your message then
+sudo echo "Holberton School" > /var/www/html/index.html
+sudo service nginx restart
