@@ -1,0 +1,59 @@
+# Create the beautiful 404 page
+cat > 5-design_a_beautiful_404_page.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 4em;
+            margin: 0;
+            animation: bounce 2s infinite;
+        }
+        p {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        .french-text {
+            font-style: italic;
+            font-size: 1.2em;
+            color: #ffeb3b;
+            margin: 15px 0;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>404</h1>
+        <p>Oops! Page Not Found</p>
+        <div class="french-text">Ceci n'est pas une page</div>
+        <p>The page you're looking for has wandered off into the digital void.</p>
+    </div>
+</body>
+</html>
+EOF
