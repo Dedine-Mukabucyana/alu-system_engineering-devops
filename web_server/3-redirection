@@ -1,46 +1,16 @@
 #!/usr/bin/env bash
-# ALX-ready script: Install Nginx, configure index page, 301 redirect, and custom 404 page
+# Installs Nginx with the following configurations:
+#+    Listens on port 80.
+#+    Returns a page containing "Holberton School" when queried
+#++    at the root with a curl GET request.
 
-# 1️⃣ Install Nginx silently
-apt-get update -y > /dev/null 2>&1
-apt-get install -y nginx > /dev/null 2>&1
+sudo apt-get update 
+sudo apt-get install -y nginx 
 
-# 2️⃣ Ensure Nginx is running
-service nginx start > /dev/null 2>&1
+echo "Holberton School" | sudo tee /var/www/html/index.html
 
-# 3️⃣ Create index page
-echo "Holberton School" > /var/www/html/index.html
+string_for_replacement="server_name _;\n\trewrite ^\/redirect_me https:\/\/www.youtube.com\/watch?v=QH2-TGUlwu4 permanent;"
 
-# 4️⃣ Create custom 404 page
-echo "Ceci n'est pas une page" > /var/www/html/404.html
+sudo sed -i "s/server_name _;/$string_for_replacement/" /etc/nginx/sites-available/default
 
-# 5️⃣ Overwrite default Nginx config with a minimal working server block
-cat > /etc/nginx/sites-available/default <<'EOF'
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    root /var/www/html;
-    index index.html index.htm;
-
-    server_name _;
-
-    location / {
-        try_files $uri $uri/ =404;
-    }
-
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-
-    error_page 404 /404.html;
-}
-EOF
-
-# 6️⃣ Ensure sites-enabled points to the config
-ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
-# 7️⃣ Test config and reload Nginx
-nginx -t > /dev/null 2>&1
-service nginx reload > /dev/null 2>&1
-
+sudo service nginx restart
