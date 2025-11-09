@@ -1,26 +1,46 @@
 #!/usr/bin/env bash
-# script that install nginx and configure it to redirect to another page when
-# accessing the /redirect_me page.
-sudo apt update -y
-sudo apt install nginx -y
+# ALX-ready script: Install Nginx, configure index page, 301 redirect, and custom 404 page
 
-sudo mkdir /etc/nginx/html
-sudo touch /etc/nginx/html/index.html
-# store configuration content
-new_config=\
-"server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-               root /var/www/html;
-        index index.html index.htm index.nginx-debian.html;
-        server_name _;
-        location / {
-                try_files \$uri \$uri/ =404;
-        }
-        location /redirect_me { 
-            return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-        }
+# 1️⃣ Install Nginx silently
+apt-get update -y > /dev/null 2>&1
+apt-get install -y nginx > /dev/null 2>&1
+
+# 2️⃣ Ensure Nginx is running
+service nginx start > /dev/null 2>&1
+
+# 3️⃣ Create index page
+echo "Holberton School" > /var/www/html/index.html
+
+# 4️⃣ Create custom 404 page
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+
+# 5️⃣ Overwrite default Nginx config with a minimal working server block
+cat > /etc/nginx/sites-available/default <<'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+
+    error_page 404 /404.html;
 }
-"
-echo "$new_config" > /etc/nginx/sites-available/default
-sudo service nginx restart
+EOF
+
+# 6️⃣ Ensure sites-enabled points to the config
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# 7️⃣ Test config and reload Nginx
+nginx -t > /dev/null 2>&1
+service nginx reload > /dev/null 2>&1
+
