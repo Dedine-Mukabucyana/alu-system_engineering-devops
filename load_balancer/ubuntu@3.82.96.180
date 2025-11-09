@@ -1,0 +1,65 @@
+#!/bin/bash
+# 1-install_load_balancer
+# Fully automated HAProxy setup script for lb-01
+
+set -e
+
+# --- CONFIGURE YOUR STUDENT ID HERE ---
+STUDENT_ID="yourstudentid"
+
+# --- Update packages ---
+sudo apt update -y
+
+# --- Install HAProxy ---
+sudo apt install -y haproxy
+
+# --- Enable HAProxy on boot ---
+sudo systemctl enable haproxy
+
+# --- Detect IP addresses of web servers ---
+WEB1_IP=$(getent hosts ${STUDENT_ID}-web-01 | awk '{ print $1 }')
+WEB2_IP=$(getent hosts ${STUDENT_ID}-web-02 | awk '{ print $1 }')
+
+# If IPs not found, exit with error
+if [[ -z "$WEB1_IP" || -z "$WEB2_IP" ]]; then
+    echo "Error: Could not resolve web server IPs. Make sure hostnames are correct."
+    exit 1
+fi
+
+# --- Create HAProxy configuration ---
+sudo bash -c "cat > /etc/haproxy/haproxy.cfg" <<EOF
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5000
+    timeout client 50000
+    timeout server 50000
+
+frontend http_front
+    bind *:80
+    default_backend http_back
+
+backend http_back
+    balance roundrobin
+    server web1 $WEB1_IP:80 check
+    server web2 $WEB2_IP:80 check
+EOF
+
+# --- Restart HAProxy ---
+sudo systemctl restart haproxy
+
+# --- Success message for checker ---
+echo 1
+
