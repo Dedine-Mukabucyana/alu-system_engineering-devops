@@ -36,3 +36,4 @@ EOF
 
 # Restart Nginx to apply changes
 sudo systemctl restart nginx
+echo 1
