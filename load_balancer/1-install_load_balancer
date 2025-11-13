@@ -1,39 +1,58 @@
 #!/usr/bin/env bash
-# Configure HAProxy with round-robin load balancing between web-01 and web-02
+# install load balancer
 
-# Install HAProxy if not already installed
-apt-get update
-apt-get install -y haproxy
+# Output hostname for verification
+echo "$(hostname)"
 
-# Enable HAProxy to start on boot
-systemctl enable haproxy
+echo -e "Updating and doing some minor checks...\n"
 
-# Write HAProxy configuration
-cat > /etc/haproxy/haproxy.cfg << 'EOF'
-global
-    log /dev/log local0
-    log /dev/log local1 notice
-    daemon
-    maxconn 256
+function install() {
+	command -v "$1" &> /dev/null
+	#shellcheck disable=SC2181
+	if [ $? -ne 0 ]; then
+		echo -e "	Installing: $1\n"
+		sudo apt-get update -y -qq && \
+			sudo apt-get install -y "$1" -qq
+		echo -e "\n"
+	else
+		echo -e "	${1} is already installed.\n"
+	fi
+}
 
+install haproxy #install haproxy
+
+echo -e "\nSetting up some minor stuff.\n"
+
+# backup default server config file
+sudo cp /etc/haproxy/haproxy.cfg haproxy_default.backup
+
+server_config=\
+"
 defaults
-    log global
-    mode http
-    option httplog
-    option dontlognull
-    timeout connect 5000
-    timeout client 50000
-    timeout server 50000
+  mode http
+  timeout client 15s
+  timeout connect 10s
+  timeout server 15s
+  timeout http-request 10s
 
-frontend http_front
+frontend cryptocoder-tech-frontend
     bind *:80
-    default_backend web_backend
+    default_backend cryptocoder-tech-backend
 
-backend web_backend
+backend cryptocoder-tech-backend
     balance roundrobin
     server web-01 44.212.2.129:80 check
     server web-02 54.173.192.125:80 check
-EOF
+"
 
-# Restart HAProxy
-systemctl restart haproxy
+# shellcheck disable=SC2154
+echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
+
+# enable haproxy to be started by init script
+echo "ENABLED=1" | sudo dd status=none of=/etc/default/haproxy
+
+if [ "$(pgrep -c haproxy)" -le 0 ]; then
+	sudo service haproxy start
+else
+	sudo service haproxy restart
+fi
