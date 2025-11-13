@@ -33,7 +33,6 @@ backend web_backend
     balance roundrobin
     server web-01 44.212.2.129:80 check
     server web-02 54.173.192.125:80 check
-    http-response set-header X-Served-By %s
 EOF
 
 # Restart HAProxy
