@@ -1,38 +1,19 @@
 #!/usr/bin/env bash
-# 1-install_load_balancer
-# Fully functional HAProxy setup for assignment checker
 
-set -e
+# Install HAProxy if not already installed
+apt-get update
+apt-get install -y haproxy
 
-# --- Hardcoded backend web server IPs ---
-WEB1_IP="44.212.2.129"  # IP of web-01
-WEB2_IP="54.173.192.125" # IP of web-02
+# Enable HAProxy to start on boot
+systemctl enable haproxy
 
-# --- Update packages and install HAProxy ---
-sudo apt update -y
-sudo apt install -y haproxy
-
-# --- Stop any service that may conflict on port 80 ---
-sudo systemctl stop nginx || true
-
-# --- Enable HAProxy to start on boot ---
-sudo systemctl enable haproxy
-
-# --- Add /etc/hosts entries (optional, ensures hostnames resolve) ---
-sudo bash -c "echo '${WEB1_IP} web-01' >> /etc/hosts"
-sudo bash -c "echo '${WEB2_IP} web-02' >> /etc/hosts"
-
-# --- Create HAProxy configuration ---
-sudo bash -c "cat > /etc/haproxy/haproxy.cfg" <<EOF
+# Write HAProxy configuration
+cat > /etc/haproxy/haproxy.cfg << 'EOF'
 global
     log /dev/log local0
     log /dev/log local1 notice
-    chroot /var/lib/haproxy
-    stats socket /run/haproxy/admin.sock mode 660 level admin
-    stats timeout 30s
-    user haproxy
-    group haproxy
     daemon
+    maxconn 256
 
 defaults
     log global
@@ -45,17 +26,14 @@ defaults
 
 frontend http_front
     bind *:80
-    default_backend http_back
+    default_backend web_backend
 
-backend http_back
+backend web_backend
     balance roundrobin
-    server web1 web-01:80 check
-    server web2 web-02:80 check
+    server web-01 44.212.2.129:80 check
+    server web-02 54.173.192.125:80 check
+    http-response set-header X-Served-By %s
 EOF
 
-# --- Restart HAProxy to apply changes ---
-sudo systemctl restart haproxy
-
-# --- Output 1 for automated checker ---
-echo 1
-
+# Restart HAProxy
+systemctl restart haproxy
