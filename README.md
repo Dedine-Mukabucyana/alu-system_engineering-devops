@@ -1,1 +1,1 @@
-readme file, We are being system admins now
+readme file, we're systems admins now
