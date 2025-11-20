@@ -1,11 +1,24 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 # Script to install nginx web server and configure homepage
 
-apt-get update -y
-apt-get install nginx -y
+=======
+# This script installs Nginx and configures the default page to display "Holberton School".
 
+# 1. Update package list and install Nginx (using -y as required)
+>>>>>>> 015d76f852152fd446462ff2b7bde63eb3d9c1a7
+apt-get update -y
+apt-get install -y nginx
+
+<<<<<<< HEAD
 # Replace default index.html
 echo "Holberton School" > /var/www/html/index.html
 
 # Restart nginx (without systemctl)
+=======
+# 2. Create or replace the default index.html file with the required content.
+echo "Holberton School" > /var/www/html/index.html
+
+# 3. Restart Nginx service (using service command, not systemctl)
+>>>>>>> 015d76f852152fd446462ff2b7bde63eb3d9c1a7
 service nginx restart

@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
-# Installs Nginx with the following configurations:
-#+    Listens on port 80.
-#+    Returns a page containing "Holberton School" when queried
-#++    at the root with a curl GET request.
+# Configure your Nginx server so that /redirect_me is redirecting to another page
 
-sudo apt-get update 
-sudo apt-get install -y nginx 
+sudo apt-get update
+sudo apt-get install -y nginx
 
-echo "Holberton School" | sudo tee /var/www/html/index.html
-
-string_for_replacement="server_name _;\n\trewrite ^\/redirect_me https:\/\/www.youtube.com\/watch?v=QH2-TGUlwu4 permanent;"
-
-sudo sed -i "s/server_name _;/$string_for_replacement/" /etc/nginx/sites-available/default
+echo "Hello World!" | sudo tee /var/www/html/index.html
+new_route="server_name _;\n\trewrite ^\/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;"
+sudo sed -i "s|server_name _;|$new_route|" /etc/nginx/sites-enabled/default
 
 sudo service nginx restart
