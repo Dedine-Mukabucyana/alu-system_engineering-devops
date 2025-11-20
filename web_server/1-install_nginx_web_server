@@ -1,19 +1,12 @@
 #!/usr/bin/env bash
-# 1-install_nginx_web_server
+# This script installs Nginx and configures the default page to display "Holberton School".
 
-# Update package lists and install nginx
+# 1. Update package list and install Nginx (using -y as required)
 apt-get update -y
-apt-get install nginx -y
+apt-get install -y nginx
 
-# Ensure nginx listens on port 80
-# Backup original config just in case
-cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+# 2. Create or replace the default index.html file with the required content.
+echo "Holberton School" > /var/www/html/index.html
 
-# Replace the listen directive with port 80
-sed -i 's/\(listen \)[0-9]\+\(.*\)/\180\2/' /etc/nginx/sites-available/default
-
-# Create the index.html file with required content
-echo "Holberton School for the win!" > /var/www/html/index.html
-
-# Restart nginx without using systemctl
+# 3. Restart Nginx service (using service command, not systemctl)
 service nginx restart
