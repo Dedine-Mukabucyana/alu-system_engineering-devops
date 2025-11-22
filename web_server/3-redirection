@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/bin/bash
 # 3-redirection: Configure Nginx to redirect /redirect_me to another URL permanently
 
@@ -16,3 +17,16 @@ sudo nginx -t
 
 # Reload Nginx
 sudo systemctl reload nginx
+=======
+#!/usr/bin/env bash
+# Configure your Nginx server so that /redirect_me is redirecting to another page
+
+sudo apt-get update
+sudo apt-get install -y nginx
+
+echo "Hello World!" | sudo tee /var/www/html/index.html
+new_route="server_name _;\n\trewrite ^\/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;"
+sudo sed -i "s|server_name _;|$new_route|" /etc/nginx/sites-enabled/default
+
+sudo service nginx restart
+>>>>>>> a5139ad94a69afb2829400ca6b1f51ca4e939488
