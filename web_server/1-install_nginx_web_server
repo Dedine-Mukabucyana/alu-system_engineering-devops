@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # 1-install_nginx_web_server
 
 # Update package lists and install nginx
@@ -16,4 +17,26 @@ sed -i 's/\(listen \)[0-9]\+\(.*\)/\180\2/' /etc/nginx/sites-available/default
 echo "Holberton School for the win!" > /var/www/html/index.html
 
 # Restart nginx without using systemctl
+=======
+# a Bash script that configures a new Ubuntu machine to respect
+# above requirements (this script will be run on the server itself)
+# bash script to install nginx web server
+#   - Nginx should be listening on port 80
+#   - Return page containing "Holberton School" when queried
+
+apt-get update
+apt-get install -y nginx
+
+mkdir /etc/nginx/html
+touch /etc/nginx/html/index.html
+echo "Holberton School" > /etc/nginx/html/index.html
+printf %s "server {
+     listen      80 default_server;
+     listen      [::]:80 default_server;
+     root        /etc/nginx/html;
+     index       index.html index.htm;
+}
+" > /etc/nginx/sites-available/default
+
+
 service nginx restart

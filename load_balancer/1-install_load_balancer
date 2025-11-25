@@ -41,8 +41,8 @@ frontend cryptocoder-tech-frontend
 
 backend cryptocoder-tech-backend
     balance roundrobin
-    server web-01 44.212.2.129:80 check
-    server web-02 54.173.192.125:80 check
+    server web-01 52.91.188.182:80 check
+    server web-02 3.86.25.85:80 check
 "
 
 # shellcheck disable=SC2154
@@ -56,3 +56,19 @@ if [ "$(pgrep -c haproxy)" -le 0 ]; then
 else
 	sudo service haproxy restart
 fi
+=======
+# bash script that installs HAProxy & makes configurations to meet the following requirements:
+
+apt-get -y install software-properties-common
+add-apt-repository ppa:vbernat/haproxy-1.8
+apt-get update
+apt-get -y install haproxy
+echo "ENABLED=1" >> /etc/default/haproxy
+printf %s "listen 6888-web
+    bind *:80
+    mode http
+    balance roundrobin
+    server 6888-web-01 52.91.188.182:80 check
+    server 6888-web-02 3.86.25.85:80 check
+" >> /etc/haproxy/haproxy.cfg
+service haproxy restart

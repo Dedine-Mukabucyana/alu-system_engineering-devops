@@ -3,3 +3,8 @@
 
 
 ssh -i ~/.ssh/school ubuntu@44.212.2.129
+=======
+# a Bash script that uses ssh to connect to server
+# using the private key ~/.ssh/school with the user ubuntu
+ssh -i ~/.ssh/school ubuntu@3.91.179.247
+>>>>>>> df032ba60112c325e3af577d164cd257e0710553
