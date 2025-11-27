@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 # Configure container so Nginx runs as nginx user listening on port 8080
 
-# Update nginx.conf to run as nginx user
-sed -i 's/user www-data;/user nginx;/' /etc/nginx/nginx.conf
-
-# Update listening port to 8080
-sed -i 's/listen 80;/listen 8080;/' /etc/nginx/sites-enabled/default
-
-# Restart nginx
+sed -i 's/80/8080/g' /etc/nginx/sites-available/default
+sed -i 's/#user/user/g' /etc/nginx/nginx.conf
 service nginx restart
