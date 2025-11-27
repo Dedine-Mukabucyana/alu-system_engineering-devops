@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # Configure container so Nginx runs as nginx user listening on port 8080
 
-# Update nginx config to run as nginx user
-sed -i "s/user .*/user nginx;/" /etc/nginx/nginx.conf
+# Change nginx config to run as nginx user  
+sed -i "s/#user www-data;/user nginx;/" /etc/nginx/nginx.conf
+sed -i "s/user www-data;/user nginx;/" /etc/nginx/nginx.conf
 
-# Update default site to listen on 8080
-sed -i "s/listen 80/listen 8080/" /etc/nginx/sites-available/default
+# Change default site to listen on port 8080
+sed -i "s/listen 80 /listen 8080 /" /etc/nginx/sites-available/default
+sed -i "s/listen \[::\]:80 /listen [::]:8080 /" /etc/nginx/sites-available/default
 
 # Stop nginx if running
-pkill nginx
+pkill -f nginx
 
-# Start nginx
-nginx
+# Start nginx as nginx user
+sudo -u nginx /usr/sbin/nginx
