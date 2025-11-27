@@ -2,17 +2,8 @@
 # Configure container so Nginx runs as nginx user listening on port 8080
 
 pkill apache2
-rm /etc/nginx/sites-enabled/default
-bash -c 'cat > /etc/nginx/sites-enabled/default <<INNEREOF
-server {
-    listen 8080;
-    listen [::]:8080;
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-    server_name _;
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-}
-INNEREOF'
-su nginx -s /bin/sh -c "nginx"
+sed -i "s/listen 80;/listen 8080;/" /etc/nginx/sites-available/default
+sed -i "s/\#user www-data;/user nginx;/" /etc/nginx/nginx.conf
+sed -i "s/user www-data;/user nginx;/" /etc/nginx/nginx.conf
+chown nginx:nginx /var/lib/nginx -R
+su nginx -s /bin/sh -c "/usr/sbin/nginx"
