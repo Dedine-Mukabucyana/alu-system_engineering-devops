@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Configures Nginx to listen on port 80
 
-# Fix the sites-enabled symlink if broken
+# Ensure the default site symlink exists
 ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# Restart nginx
-service nginx restart
+# Start nginx (use start instead of restart in case it's not running)
+service nginx start
