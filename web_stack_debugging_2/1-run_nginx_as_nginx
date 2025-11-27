@@ -6,8 +6,14 @@ sed -i "s/#user www-data;/user nginx;/" /etc/nginx/nginx.conf
 sed -i "s/user www-data;/user nginx;/" /etc/nginx/nginx.conf
 
 # Change default site to listen on port 8080
-sed -i "s/listen 80 /listen 8080 /" /etc/nginx/sites-available/default
-sed -i "s/listen \[::\]:80 /listen [::]:8080 /" /etc/nginx/sites-available/default
+sed -i "s/listen 80;/listen 8080;/" /etc/nginx/sites-available/default
+sed -i "s/listen \[::\]:80;/listen [::]:8080;/" /etc/nginx/sites-available/default
+
+# Fix ownership of necessary directories and files
+chown -R nginx:nginx /var/log/nginx
+chown -R nginx:nginx /var/lib/nginx
+touch /run/nginx.pid
+chown nginx:nginx /run/nginx.pid
 
 # Stop nginx if running
 pkill -f nginx
